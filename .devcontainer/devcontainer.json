@@ -1,9 +1,0 @@
-{
-    "image": "mcr.microsoft.com/devcontainers/python:3.9",
-    "settings": {
-      "terminal.integrated.shell.linux": "/bin/bash"
-    },
-    "forwardPorts": [5000],
-    "postCreateCommand": "python3 app.py"
-}
-  
