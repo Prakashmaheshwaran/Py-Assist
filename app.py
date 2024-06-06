@@ -1,17 +1,24 @@
-from flask import Flask, jsonify
-import platform
-import psutil
+from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
-@app.route('/specs', methods=['GET'])
-def get_specs():
-    specs = {
-        "CPU": platform.processor(),
-        "Memory": f"{psutil.virtual_memory().total / (1024.0 **3):.2f} GB",
-        "Storage": f"{psutil.disk_usage('/').total / (1024.0 **3):.2f} GB"
-    }
-    return jsonify(specs)
+@app.route('/')
+def index():
+    # URL to be opened in iframe
+    url = "https://server.duinocoin.com/"
+    # HTML content with iframe
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Preview</title>
+    </head>
+    <body>
+        <iframe src="{url}" width="100%" height="100%"></iframe>
+    </body>
+    </html>
+    """
+    return render_template_string(html_content)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
