@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 import requests
+import platform
+import psutil
 
 app = Flask(__name__)
 
@@ -8,6 +10,15 @@ UNSPLASH_ACCESS_KEY = 'YOUR_UNSPLASH_ACCESS_KEY'  # Replace this with your Unspl
 @app.route('/')
 def home():
     return "This is an API page"
+
+@app.route('/specs', methods=['GET'])
+def get_specs():
+    specs = {
+        "CPU": platform.processor(),
+        "Memory": f"{psutil.virtual_memory().total / (1024.0 **3):.2f} GB",
+        "Storage": f"{psutil.disk_usage('/').total / (1024.0 **3):.2f} GB"
+    }
+    return jsonify(specs)
 
 @app.route('/image-search', methods=['GET'])
 def image_search():
