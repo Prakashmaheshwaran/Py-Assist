@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from addons.specs import get_specs  # Import the get_specs function
 from addons.wordpressblogimagehelper import fetch_and_upload_image  # Import the functions
 from addons.fetchpost import get_published_and_scheduled_posts  # Import the post functions
+from addons.postupdate import update_post_media_and_seo  # Import the update post functions
 
 app = Flask(__name__)
 
@@ -38,6 +39,25 @@ def get_posts_endpoint():
     try:
         posts = get_published_and_scheduled_posts(account_suffix)
         return jsonify({"posts": posts})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/update-post', methods=['POST'])
+def update_post_endpoint():
+    data = request.json
+    account_suffix = data.get('account_suffix')
+    post_id = data.get('post_id')
+    new_image_id = data.get('new_image_id')
+    focuskw = data.get('focuskw')
+    seo_title = data.get('seo_title')
+    meta_desc = data.get('meta_desc')
+
+    if not all([account_suffix, post_id, new_image_id, focuskw, seo_title, meta_desc]):
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    try:
+        updated_post = update_post_media_and_seo(account_suffix, post_id, new_image_id, focuskw, seo_title, meta_desc)
+        return jsonify(updated_post)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
