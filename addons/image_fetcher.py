@@ -69,8 +69,8 @@ def fetch_unsplash_landscape_images(keyword, num_images=20):
         print(f"Failed to fetch images from Unsplash. Status code: {response.status_code}")
         raise Exception(f"Failed to fetch images. Status code: {response.status_code}, Message: {response.json()}")
 
-def fetch_images_with_retries(keyword, num_images=10):
-    print("Entering fetch_images_with_retries")
+def fetch_random_image(keyword, num_images=10):
+    print("Entering fetch_random_image")
     fetch_functions = [
         lambda: fetch_unsplash_landscape_images(keyword, num_images),
         lambda: fetch_pixabay_landscape_images(keyword, num_images),
@@ -81,17 +81,14 @@ def fetch_images_with_retries(keyword, num_images=10):
         print(f"Attempt {attempt + 1}: Fetching images from {fetch_function.__name__}")
         try:
             images = fetch_function()
-            print("Images fetched successfully")
-            return images
+            if images:
+                selected_image = random.choice(images)  # Select one image randomly
+                print("Image fetched and selected successfully")
+                return selected_image
         except Exception as e:
             print(f"Error fetching images: {e}")
             continue
     
-    # Return dummy URLs if no images are fetched after retries
-    print("Failed to fetch images after 3 attempts, returning dummy images")
-    return [
-        "https://dynoxglobal.com/wp-content/uploads/project-thumb-6-style2-1.png",
-        "https://dynoxglobal.com/wp-content/uploads/project-thumb-5-style2-1.png",
-        "https://dynoxglobal.com/wp-content/uploads/project-thumb-4-style2-1.png",
-        "https://dynoxglobal.com/wp-content/uploads/project-thumb-7-style2-1.png"
-    ]
+    # Return a dummy URL if no images are fetched after retries
+    print("Failed to fetch images after 3 attempts, returning a dummy image")
+    return "https://dynoxglobal.com/wp-content/uploads/dynox-global-defualt-blog-thumbnail-yoast-seo.png"
