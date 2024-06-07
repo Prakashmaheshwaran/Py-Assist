@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from addons.specs import get_specs  # Import the get_specs function
 from addons.wordpressblogimagehelper import fetch_and_upload_image  # Import the functions
+from addons.fetchpost import get_published_and_scheduled_posts  # Import the post functions
 
 app = Flask(__name__)
 
@@ -25,6 +26,18 @@ def fetch_and_upload_image_endpoint():
         if image_id is None or image_url is None:
             return jsonify({"error": "Failed to upload image to WordPress"}), 500
         return jsonify({"wp_image_id": image_id, "wp_image_url": image_url})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/get-posts', methods=['GET'])
+def get_posts_endpoint():
+    account_suffix = request.args.get('account_suffix')
+    if not account_suffix:
+        return jsonify({"error": "Account suffix not provided"}), 400
+
+    try:
+        posts = get_published_and_scheduled_posts(account_suffix)
+        return jsonify({"posts": posts})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
