@@ -1,48 +1,33 @@
 from flask import Flask, request, jsonify
-import requests
-import platform
-import psutil
+import random
+from addons.specs import get_specs  # Import the get_specs function
+from addons.image_fetcher import fetch_images_with_retries  # Import the image fetching function
 
 app = Flask(__name__)
-
-UNSPLASH_ACCESS_KEY = 'YOUR_UNSPLASH_ACCESS_KEY'  # Replace this with your Unsplash API Access Key
 
 @app.route('/')
 def home():
     return "This is an API page"
 
 @app.route('/specs', methods=['GET'])
-def get_specs():
-    cpu_freq = psutil.cpu_freq()
-    specs = {
-        "CPU": platform.processor(),
-        "Memory": f"{psutil.virtual_memory().total / (1024.0 **3):.2f} GB",
-        "Storage": f"{psutil.disk_usage('/').total / (1024.0 **3):.2f} GB",
-        "CPU Frequency": f"{cpu_freq.current / 1000:.2f} GHz"
-    }
-    return jsonify(specs)
+def specs_route():
+    return get_specs()  # Call the get_specs function
 
 @app.route('/image-search', methods=['GET'])
 def image_search():
-    query = request.args.get('query')
-    if not query:
+    keyword = request.args.get('query')
+    if not keyword:
         return jsonify({"error": "No query parameter provided"}), 400
 
-    url = "https://api.unsplash.com/search/photos"
-    params = {
-        'query': query,
-        'client_id': UNSPLASH_ACCESS_KEY,
-        'per_page': 10
-    }
-
-    response = requests.get(url, params=params)
-    if response.status_code != 200:
-        return jsonify({"error": "Failed to fetch images from Unsplash"}), response.status_code
-
-    data = response.json()
-    images = [{'id': img['id'], 'url': img['urls']['regular'], 'description': img['description']} for img in data['results']]
-
-    return jsonify(images)
+    try:
+        images = fetch_images_with_retries(keyword)
+        if images:
+            selected_image = random.choice(images)  # Select one image randomly
+            return jsonify({"url": selected_image})
+        else:
+            return jsonify({"error": "No images found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
