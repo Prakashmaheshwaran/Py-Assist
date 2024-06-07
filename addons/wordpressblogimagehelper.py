@@ -4,6 +4,7 @@ import re
 import base64
 import random
 from PIL import Image
+from io import BytesIO
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,49 +42,39 @@ def sanitize_filename(filename):
     # Remove any character that is not a letter, number, hyphen, or underscore
     return re.sub(r'[^a-zA-Z0-9-_]', '', filename)
 
-def convert_image_to_png(image_path):
-    with Image.open(image_path) as img:
-        png_image_path = image_path.rsplit('.', 1)[0] + '.png'
-        img.save(png_image_path, format='PNG')
-    return png_image_path
-
 def upload_image_to_wordpress(image_url, keyword, account_suffix):
     try:
         WP_URL, AUTH_TOKEN = get_wp_credentials(account_suffix)
         COMPANY_NAME = os.getenv(f"COMPANY_NAME_{account_suffix}")
 
         # Download the image
-        sanitized_filename = sanitize_filename(os.path.basename(image_url))
-        image_path = os.path.join(os.getcwd(), sanitized_filename)
-        response = requests.get(image_url, stream=True)
-        if response.status_code == 200:
-            with open(image_path, 'wb') as file:
-                for chunk in response.iter_content(1024):
-                    file.write(chunk)
-        else:
+        response = requests.get(image_url)
+        if response.status_code != 200:
             print(f"Failed to download image. Status code: {response.status_code}")
             raise Exception(f"Failed to download image. Status code: {response.status_code}")
-
-        # Convert the image to PNG
-        png_image_path = convert_image_to_png(image_path)
+        
+        image = Image.open(BytesIO(response.content))
+        
+        # Convert the image to PNG in memory
+        with BytesIO() as output:
+            image.save(output, format="PNG")
+            png_data = output.getvalue()
 
         # Rename the file to keyword and company name
-        renamed_png_image_path = os.path.join(os.getcwd(), f"{sanitize_filename(keyword)}_{sanitize_filename(COMPANY_NAME)}.png")
-        os.rename(png_image_path, renamed_png_image_path)
+        image_filename = f"{sanitize_filename(keyword)}_{sanitize_filename(COMPANY_NAME)}.png"
 
         # Upload the image to WordPress
-        with open(renamed_png_image_path, 'rb') as file:
-            files = {'file': file}
-            headers = {'Authorization': AUTH_TOKEN}
-            print("Uploading the image to WordPress")
-            response = requests.post(f"{WP_URL}/wp-json/wp/v2/media", headers=headers, files=files)
-            print("Response status code:", response.status_code)
-            print("Response content:", response.content)
-            response.raise_for_status()
-            image_data = response.json()
-            image_id = image_data['id']
-            image_url = image_data['source_url']
-            print(f"Image uploaded with ID: {image_id}, URL: {image_url}")
+        files = {'file': (image_filename, BytesIO(png_data), 'image/png')}
+        headers = {'Authorization': AUTH_TOKEN}
+        print("Uploading the image to WordPress")
+        response = requests.post(f"{WP_URL}/wp-json/wp/v2/media", headers=headers, files=files)
+        print("Response status code:", response.status_code)
+        print("Response content:", response.content)
+        response.raise_for_status()
+        image_data = response.json()
+        image_id = image_data['id']
+        image_url = image_data['source_url']
+        print(f"Image uploaded with ID: {image_id}, URL: {image_url}")
 
         # Update metadata
         title = keyword + " - " + COMPANY_NAME
@@ -101,10 +92,6 @@ def upload_image_to_wordpress(image_url, keyword, account_suffix):
         response = requests.post(f"{WP_URL}/wp-json/wp/v2/media/{image_id}", headers=headers, json=media_details)
         response.raise_for_status()
         print("Media metadata updated for ID:", image_id)
-
-        # Clean up the downloaded files
-        os.remove(image_path)
-        os.remove(renamed_png_image_path)
 
         return image_id, image_url
     except Exception as e:
