@@ -46,7 +46,6 @@ def get_published_and_scheduled_posts(account_suffix):
         all_posts = published_posts + scheduled_posts
         
         formatted_posts = format_posts(all_posts, wp_url)
-        main_link = "Dynox Global home page - https://dynoxglobal.com/, Dynox global contact page - https://dynoxglobal.com/contact-us/,"
-        return main_link + formatted_posts
+        return formatted_posts
     except Exception as e:
         return f"An error occurred: {e}"
