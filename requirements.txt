@@ -3,3 +3,4 @@ requests
 psutil
 python-dotenv
 Pillow
+gunicorn
