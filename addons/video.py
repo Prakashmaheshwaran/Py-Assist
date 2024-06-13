@@ -1,5 +1,11 @@
+import moviepy.config as mpy_config
+import os
+
+# Set the ImageMagick binary path to the local AppImage
+imagemagick_binary_path = os.path.join(os.path.dirname(__file__), '..', 'imagemagick', 'magick')
+mpy_config.change_settings({"IMAGEMAGICK_BINARY": imagemagick_binary_path})
+
 from moviepy.editor import *
-from moviepy.video.tools.drawing import color_gradient
 
 def create_hello_video():
     width, height = 1080, 1920

@@ -22,6 +22,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code to the working directory
 COPY . .
 
+# Ensure the ImageMagick AppImage is included and make it executable
+COPY imagemagick /app/imagemagick
+RUN chmod +x /app/imagemagick/magick
+
 # Expose the port the app runs on
 EXPOSE 5000
 
