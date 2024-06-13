@@ -2,7 +2,7 @@ from moviepy.editor import *
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
-def create_text_image(text, size, font_size, font_path="Arial.ttf"):
+def create_text_image(text, size, font_size, font_path="fonts/Arial.ttf"):
     """ Create an image with the given text """
     image = Image.new('RGB', size, color=(255, 255, 255))
     draw = ImageDraw.Draw(image)
