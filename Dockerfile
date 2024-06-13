@@ -13,6 +13,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     imagemagick \
     && rm -rf /var/lib/apt/lists/*
 
+# Update ImageMagick policy.xml to allow all operations
+RUN sed -i 's/<policy domain="coder" rights="none" pattern="PS"/<policy domain="coder" rights="read|write" pattern="PS"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="EPS"/<policy domain="coder" rights="read|write" pattern="EPS"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="PDF"/<policy domain="coder" rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="XPS"/<policy domain="coder" rights="read|write" pattern="XPS"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="MSL"/<policy domain="coder" rights="read|write" pattern="MSL"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="NULL"/<policy domain="coder" rights="read|write" pattern="NULL"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="INLINE"/<policy domain="coder" rights="read|write" pattern="INLINE"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="TMP"/<policy domain="coder" rights="read|write" pattern="TMP"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="path" rights="none" pattern="@*"/<policy domain="path" rights="read|write" pattern="@*"/' /etc/ImageMagick-6/policy.xml
+
 # Set the environment variable for ImageMagick
 ENV IMAGEMAGICK_BINARY=/usr/bin/convert
 
