@@ -4,11 +4,13 @@ FROM python:3.8-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Install build-essential and other dependencies required for building packages
+# Install build-essential, ffmpeg, and ImageMagick
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libjpeg-dev \
     zlib1g-dev \
+    ffmpeg \
+    imagemagick \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the requirements file to the working directory
