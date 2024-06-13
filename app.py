@@ -3,6 +3,8 @@ from addons.specs import get_specs  # Import the get_specs function
 from addons.wordpressblogimagehelper import fetch_and_upload_image  # Import the functions
 from addons.fetchpost import get_published_and_scheduled_posts  # Import the post functions
 from addons.postupdate import update_post_media_and_seo  # Import the update post functions
+import threading
+import time
 
 app = Flask(__name__)
 
@@ -60,6 +62,21 @@ def update_post_endpoint():
         return jsonify(updated_post)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Function to log duration every second
+def long_running_task():
+    start_time = time.time()
+    while True:
+        elapsed_time = time.time() - start_time
+        print(f"Task has been running for {int(elapsed_time)} seconds")
+        time.sleep(1)
+
+@app.route('/run-long-task', methods=['GET'])
+def run_long_task():
+    thread = threading.Thread(target=long_running_task)
+    thread.daemon = True  # Allows the thread to be killed when the main program exits
+    thread.start()
+    return jsonify({"status": "Task started, check logs for duration updates"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
