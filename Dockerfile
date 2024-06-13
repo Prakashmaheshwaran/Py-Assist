@@ -22,7 +22,11 @@ RUN sed -i 's/<policy domain="coder" rights="none" pattern="PS"/<policy domain="
     sed -i 's/<policy domain="coder" rights="none" pattern="NULL"/<policy domain="coder" rights="read|write" pattern="NULL"/' /etc/ImageMagick-6/policy.xml && \
     sed -i 's/<policy domain="coder" rights="none" pattern="INLINE"/<policy domain="coder" rights="read|write" pattern="INLINE"/' /etc/ImageMagick-6/policy.xml && \
     sed -i 's/<policy domain="coder" rights="none" pattern="TMP"/<policy domain="coder" rights="read|write" pattern="TMP"/' /etc/ImageMagick-6/policy.xml && \
-    sed -i 's/<policy domain="path" rights="none" pattern="@*"/<policy domain="path" rights="read|write" pattern="@*"/' /etc/ImageMagick-6/policy.xml
+    sed -i 's/<policy domain="path" rights="none" pattern="@*"/<policy domain="path" rights="read|write" pattern="@*"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="PNM"/<policy domain="coder" rights="read|write" pattern="PNM"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="PCX"/<policy domain="coder" rights="read|write" pattern="PCX"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="PICT"/<policy domain="coder" rights="read|write" pattern="PICT"/' /etc/ImageMagick-6/policy.xml && \
+    sed -i 's/<policy domain="coder" rights="none" pattern="PCL"/<policy domain="coder" rights="read|write" pattern="PCL"/' /etc/ImageMagick-6/policy.xml
 
 # Set the environment variable for ImageMagick
 ENV IMAGEMAGICK_BINARY=/usr/bin/convert
