@@ -10,3 +10,5 @@ addons/__pycache__/
 # Ignore other common files
 *.log
 *.tmp
+
+test.py
