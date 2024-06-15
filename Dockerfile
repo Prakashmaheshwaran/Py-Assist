@@ -7,9 +7,6 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libjpeg-dev \
-    zlib1g-dev \
-    ffmpeg \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -21,10 +18,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code to the working directory
 COPY . .
-
-# Ensure the ImageMagick AppImage is included and make it executable
-COPY imagemagick /app/imagemagick
-RUN chmod +x /app/imagemagick/magick
 
 # Expose the port the app runs on
 EXPOSE 5000
