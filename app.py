@@ -65,7 +65,7 @@ def run_long_task():
 @app.route('/edit-video', methods=['GET'])
 def edit_video():
     def make_frame(t):
-        text = mpy.TextClip("Hello", fontsize=70, color='white')
+        text = mpy.TextClip("Hello", font='FreeMono', fontsize=70, color='white')
         text = text.set_position((min(int(t*100), 500), 'center')).set_duration(5)
         return text.get_frame(t)
 
