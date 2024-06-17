@@ -20,6 +20,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code to the working directory
 COPY . .
 
+# Set the environment variable for ImageMagick
+ENV IMAGEMAGICK_BINARY /usr/bin/convert
+ENV VIDEO_OUTPUT_PATH /app/hello_video.mp4
+
 # Expose the port the app runs on
 EXPOSE 5000
 

@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from addons.specs import get_specs
 from addons.fetchpost import get_published_and_scheduled_posts
 from addons.postupdate import update_post_media_and_seo
 import threading
 import time
+import moviepy.editor as mpy
+import os
 
 app = Flask(__name__)
 
@@ -59,6 +61,22 @@ def run_long_task():
     thread.daemon = True
     thread.start()
     return jsonify({"status": "Task started, check logs for duration updates"}), 200
+
+@app.route('/edit-video', methods=['GET'])
+def edit_video():
+    def make_frame(t):
+        text = mpy.TextClip("Hello", fontsize=70, color='white')
+        text = text.set_position((min(int(t*100), 500), 'center')).set_duration(5)
+        return text.get_frame(t)
+
+    video = mpy.VideoClip(make_frame, duration=5).set_duration(5)
+    video = video.set_fps(24)
+    video = video.on_color(size=(600, 400), color=(0, 0, 0))
+
+    output_path = os.getenv('VIDEO_OUTPUT_PATH', 'hello_video.mp4')
+    video.write_videofile(output_path, codec='libx264')
+
+    return send_file(output_path, as_attachment=True, mimetype='video/mp4')
 
 if __name__ == '__main__':
     app.run(debug=True)
