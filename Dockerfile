@@ -4,9 +4,10 @@ FROM python:3.8-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies, including ImageMagick
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    imagemagick \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
