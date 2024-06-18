@@ -1,21 +1,9 @@
-import os
 import requests
 import base64
-from dotenv import load_dotenv
 
-load_dotenv()
-
-def get_wp_credentials(account_suffix):
-    WP_URL = os.getenv(f"WP_URL_{account_suffix}")
-    WP_USERNAME = os.getenv(f"WP_USERNAME_{account_suffix}")
-    WP_PASSWORD = os.getenv(f"WP_PASSWORD_{account_suffix}")
-
-    if not WP_URL or not WP_USERNAME or not WP_PASSWORD:
-        raise ValueError(f"WordPress credentials for account {account_suffix} are not set properly.")
-    
-    AUTH_TOKEN = f"Basic {base64.b64encode(f'{WP_USERNAME}:{WP_PASSWORD}'.encode()).decode()}"
-    
-    return WP_URL, AUTH_TOKEN
+def get_wp_credentials(wp_url, wp_username, wp_password):
+    AUTH_TOKEN = f"Basic {base64.b64encode(f'{wp_username}:{wp_password}'.encode()).decode()}"
+    return wp_url, AUTH_TOKEN
 
 def fetch_posts(status, wp_url, auth_token):
     headers = {
@@ -37,9 +25,9 @@ def format_posts(posts, wp_url):
         formatted_posts += f"{title} - {slug_link}, "
     return formatted_posts.rstrip(', ')
 
-def get_published_and_scheduled_posts(account_suffix):
+def get_published_and_scheduled_posts(account_suffix, wp_url, wp_username, wp_password):
     try:
-        wp_url, auth_token = get_wp_credentials(account_suffix)
+        wp_url, auth_token = get_wp_credentials(wp_url, wp_username, wp_password)
         
         published_posts = fetch_posts('publish', wp_url, auth_token)
         scheduled_posts = fetch_posts('future', wp_url, auth_token)

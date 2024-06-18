@@ -9,17 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def get_wp_credentials(account_suffix):
-    WP_URL = os.getenv(f"WP_URL_{account_suffix}")
-    WP_USERNAME = os.getenv(f"WP_USERNAME_{account_suffix}")
-    WP_PASSWORD = os.getenv(f"WP_PASSWORD_{account_suffix}")
-
-    if not WP_URL or not WP_USERNAME or not WP_PASSWORD:
-        raise ValueError(f"WordPress credentials for account {account_suffix} are not set properly.")
-    
-    AUTH_TOKEN = f"Basic {base64.b64encode(f'{WP_USERNAME}:{WP_PASSWORD}'.encode()).decode()}"
-    
-    return WP_URL, AUTH_TOKEN
+def get_wp_credentials(wp_url, wp_username, wp_password):
+    AUTH_TOKEN = f"Basic {base64.b64encode(f'{wp_username}:{wp_password}'.encode()).decode()}"
+    return AUTH_TOKEN
 
 def fetch_random_image_from_unsplash(keyword):
     UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY")
@@ -42,9 +34,9 @@ def sanitize_filename(filename):
     # Remove any character that is not a letter, number, hyphen, or underscore
     return re.sub(r'[^a-zA-Z0-9-_]', '', filename)
 
-def upload_image_to_wordpress(image_url, keyword, account_suffix):
+def upload_image_to_wordpress(image_url, keyword, account_suffix, wp_url, wp_username, wp_password):
     try:
-        WP_URL, AUTH_TOKEN = get_wp_credentials(account_suffix)
+        AUTH_TOKEN = get_wp_credentials(wp_url, wp_username, wp_password)
         COMPANY_NAME = os.getenv(f"COMPANY_NAME_{account_suffix}")
 
         # Download the image
@@ -67,7 +59,7 @@ def upload_image_to_wordpress(image_url, keyword, account_suffix):
         files = {'file': (image_filename, BytesIO(png_data), 'image/png')}
         headers = {'Authorization': AUTH_TOKEN}
         print("Uploading the image to WordPress")
-        response = requests.post(f"{WP_URL}/wp-json/wp/v2/media", headers=headers, files=files)
+        response = requests.post(f"{wp_url}/wp-json/wp/v2/media", headers=headers, files=files)
         print("Response status code:", response.status_code)
         print("Response content:", response.content)
         response.raise_for_status()
@@ -89,7 +81,7 @@ def upload_image_to_wordpress(image_url, keyword, account_suffix):
             'alt_text': alt_text
         }
         headers.update({'Content-Type': 'application/json'})
-        response = requests.post(f"{WP_URL}/wp-json/wp/v2/media/{image_id}", headers=headers, json=media_details)
+        response = requests.post(f"{wp_url}/wp-json/wp/v2/media/{image_id}", headers=headers, json=media_details)
         response.raise_for_status()
         print("Media metadata updated for ID:", image_id)
 
@@ -98,7 +90,7 @@ def upload_image_to_wordpress(image_url, keyword, account_suffix):
         print(f"Error in upload process: {e}")
         return None, None
 
-def fetch_and_upload_image(keyword, account_suffix):
+def fetch_and_upload_image(keyword, account_suffix, wp_url, wp_username, wp_password):
     try:
         # Fetch an image URL using the keyword
         try:
@@ -107,7 +99,7 @@ def fetch_and_upload_image(keyword, account_suffix):
             image_url = "https://dynoxglobal.com/wp-content/uploads/project-thumb-6-style2-1.png"
 
         # Upload the fetched image to WordPress
-        image_id, uploaded_image_url = upload_image_to_wordpress(image_url, keyword, account_suffix)
+        image_id, uploaded_image_url = upload_image_to_wordpress(image_url, keyword, account_suffix, wp_url, wp_username, wp_password)
         return image_id, uploaded_image_url
     except Exception as e:
         print(f"Error: {e}")
