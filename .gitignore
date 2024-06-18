@@ -12,3 +12,4 @@ addons/__pycache__/
 *.tmp
 
 test.py
+test*.py
