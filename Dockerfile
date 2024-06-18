@@ -4,11 +4,14 @@ FROM python:3.8-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Install system dependencies, including ImageMagick
+# Install system dependencies, including ImageMagick and additional fonts
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     imagemagick \
-    fonts-freefont-ttf\
+    fonts-freefont-ttf \
+    fonts-liberation \
+    fonts-noto \
+    fonts-dejavu \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
