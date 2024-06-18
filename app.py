@@ -78,7 +78,7 @@ def make_frame(t):
     # Create a blank frame with white background
     frame = mpy.ColorClip(size=(400, 600), color=(255, 255, 255)).to_ImageClip().get_frame(t)
     # Create text clip
-    text_clip = mpy.TextClip("Hello", fontsize=50, color='black')
+    text_clip = mpy.TextClip("Hello", font='FreeMono', fontsize=50, color='black')
     # Calculate text position
     text_width, text_height = text_clip.size
     x_pos = 400 - text_width - t * (400 / 5)  # Move from right to left over 5 seconds
