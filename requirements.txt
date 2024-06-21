@@ -6,4 +6,3 @@ Pillow
 gunicorn
 moviepy
 python-dotenv
-youtube-transcript-api
