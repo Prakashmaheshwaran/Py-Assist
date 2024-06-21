@@ -37,7 +37,7 @@ def sanitize_filename(filename):
 def upload_image_to_wordpress(image_url, keyword, account_suffix, wp_url, wp_username, wp_password):
     try:
         AUTH_TOKEN = get_wp_credentials(wp_url, wp_username, wp_password)
-        COMPANY_NAME = os.getenv(f"COMPANY_NAME_{account_suffix}")
+        COMPANY_NAME = account_suffix
 
         # Download the image
         response = requests.get(image_url)
@@ -53,7 +53,7 @@ def upload_image_to_wordpress(image_url, keyword, account_suffix, wp_url, wp_use
             png_data = output.getvalue()
 
         # Rename the file to keyword and company name
-        image_filename = f"{sanitize_filename(keyword)}_{sanitize_filename(COMPANY_NAME)}.png"
+        image_filename = f"{sanitize_filename(keyword)}_{sanitize_filename(account_suffix)}.png"
 
         # Upload the image to WordPress
         files = {'file': (image_filename, BytesIO(png_data), 'image/png')}
