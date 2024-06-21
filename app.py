@@ -67,7 +67,7 @@ def get_youtube_transcript():
         transcript_text = ' '.join([entry['text'] for entry in transcript])
         return jsonify({"transcript": transcript_text})
     except Exception as e:
-        return jsonify({"error": "No transcript available"}), 500
+        return jsonify({"error": "No transcript available"})
     
 if __name__ == '__main__':
     app.run(debug=True)
