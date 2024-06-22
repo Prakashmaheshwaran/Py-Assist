@@ -7,3 +7,4 @@ gunicorn
 moviepy
 python-dotenv
 youtube_transcript_api
+requests_oauthlib

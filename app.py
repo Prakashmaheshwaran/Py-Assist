@@ -3,6 +3,8 @@ from addons.check_work import get_specs, generate_video
 from addons.fetchpost import get_published_and_scheduled_posts
 from addons.image_upload import fetch_and_upload_image
 from youtube_transcript_api import YouTubeTranscriptApi
+from requests_oauthlib import OAuth1
+import requests
 
 app = Flask(__name__)
 
@@ -68,6 +70,113 @@ def get_youtube_transcript():
         return jsonify({"transcript": transcript_text})
     except Exception as e:
         return jsonify({"error": "No transcript available"})
+
+@app.route('/post/photo', methods=['POST'])
+def post_photo():
+    data = request.get_json()
     
+    # Extract credentials and endpoint details from JSON payload
+    consumer_key = data.get('consumer_key')
+    consumer_secret = data.get('consumer_secret')
+    access_token = data.get('access_token')
+    access_token_secret = data.get('access_token_secret')
+    blog_name = data.get('blog_name')
+    image_url = data.get('image_url')
+    caption = data.get('caption', '')
+    
+    # Tumblr API endpoints
+    base_url = f'https://api.tumblr.com/v2/blog/{blog_name}.tumblr.com'
+    
+    # OAuth1 authentication setup
+    auth = OAuth1(consumer_key, consumer_secret, access_token, access_token_secret)
+
+    # Parameters for the photo post
+    params = {
+        'type': 'photo',
+        'caption': caption,
+        'source': image_url,
+        # Additional optional parameters can be added here
+    }
+    
+    post_url = f'{base_url}/post'
+    response = requests.post(post_url, auth=auth, data=params)
+    
+    if response.status_code == 201:
+        return jsonify({'message': 'Photo posted successfully'}), 201
+    else:
+        return jsonify({'error': f'Failed to post photo: {response.status_code}'}), response.status_code
+
+@app.route('/post/video', methods=['POST'])
+def post_video():
+    data = request.get_json()
+    
+    # Extract credentials and endpoint details from JSON payload
+    consumer_key = data.get('consumer_key')
+    consumer_secret = data.get('consumer_secret')
+    access_token = data.get('access_token')
+    access_token_secret = data.get('access_token_secret')
+    blog_name = data.get('blog_name')
+    video_url = data.get('video_url')
+    caption = data.get('caption', '')
+    
+    # Tumblr API endpoints
+    base_url = f'https://api.tumblr.com/v2/blog/{blog_name}.tumblr.com'
+    
+    # OAuth1 authentication setup
+    auth = OAuth1(consumer_key, consumer_secret, access_token, access_token_secret)
+
+    # Parameters for the video post
+    params = {
+        'type': 'video',
+        'caption': caption,
+        'embed': video_url,
+        # Additional optional parameters can be added here
+    }
+    
+    post_url = f'{base_url}/post'
+    response = requests.post(post_url, auth=auth, data=params)
+    
+    if response.status_code == 201:
+        return jsonify({'message': 'Video posted successfully'}), 201
+    else:
+        return jsonify({'error': f'Failed to post video: {response.status_code}'}), response.status_code
+
+@app.route('/post/link', methods=['POST'])
+def post_link():
+    data = request.get_json()
+    
+    # Extract credentials and endpoint details from JSON payload
+    consumer_key = data.get('consumer_key')
+    consumer_secret = data.get('consumer_secret')
+    access_token = data.get('access_token')
+    access_token_secret = data.get('access_token_secret')
+    blog_name = data.get('blog_name')
+    link_url = data.get('link_url')
+    title = data.get('title', '')
+    description = data.get('description', '')
+    
+    # Tumblr API endpoints
+    base_url = f'https://api.tumblr.com/v2/blog/{blog_name}.tumblr.com'
+    
+    # OAuth1 authentication setup
+    auth = OAuth1(consumer_key, consumer_secret, access_token, access_token_secret)
+
+    # Parameters for the link post
+    params = {
+        'type': 'link',
+        'url': link_url,
+        'title': title,
+        'description': description,
+        # Additional optional parameters can be added here
+    }
+    
+    post_url = f'{base_url}/post'
+    response = requests.post(post_url, auth=auth, data=params)
+    
+    if response.status_code == 201:
+        return jsonify({'message': 'Link posted successfully'}), 201
+    else:
+        return jsonify({'error': f'Failed to post link: {response.status_code}'}), response.status_code
+
 if __name__ == '__main__':
     app.run(debug=True)
