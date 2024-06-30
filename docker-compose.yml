@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  pyassist:
+    build:
+      context: ./pyassist
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      IMAGEMAGICK_BINARY: /usr/bin/convert
+      VIDEO_OUTPUT_PATH: /app/hello_video.mp4
+    depends_on:
+      - whatsapp
+
+  ollama:
+    build:
+      context: ./ollama
+      dockerfile: Dockerfile
+    ports:
+      - "11434:11434"
+    environment:
+      OLLAMA_HOST: 0.0.0.0
+
+  shottower:
+    build:
+      context: ./shottower
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+
+  whatsapp:
+    build:
+      context: ./whatsapp
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
