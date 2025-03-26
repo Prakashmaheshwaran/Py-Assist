@@ -1,110 +1,94 @@
-# Project README.md
+# Py-Assist
 
-## Project Overview
+A Flask-based API service that provides WordPress content management, image handling, and video editing capabilities.
 
-This project is a Flask-based API that provides various functionalities related to managing WordPress posts, uploading images, and editing videos. Below are the details of each endpoint along with sample `curl` commands and payload requests.
+## Features
 
-## Endpoints
+- WordPress post management (publish, schedule, update)
+- Image fetching and uploading to WordPress
+- Video editing with text overlay effects
+- SEO metadata management
 
-### 1. Home
+## Quick Start
 
-- **URL**: `/`
-- **Method**: `GET`
-- **Description**: Returns a simple message indicating that this is an API page.
-- **Sample `curl` Request**:
-  ```bash
-  curl -X GET http://127.0.0.1:5000/
-  ```
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Set environment variables (optional):
+   - `VIDEO_OUTPUT_PATH`: Custom path for edited video output
 
-### 2. Get Specs
+4. Start the server:
+   ```bash
+   python app.py
+   ```
 
-- **URL**: `/specs`
-- **Method**: `GET`
-- **Description**: Retrieves specifications of the API.
-- **Sample `curl` Request**:
-  ```bash
-  curl -X GET http://127.0.0.1:5000/specs
-  ```
+## API Endpoints
 
-### 3. Get Posts
+### Get Posts
+Retrieve published and scheduled WordPress posts.
 
-- **URL**: `/get-posts`
-- **Method**: `POST`
-- **Description**: Retrieves published and scheduled posts from a WordPress site.
-- **Sample `curl` Request**:
-  ```bash
-  curl -X POST http://127.0.0.1:5000/get-posts -H "Content-Type: application/json" -d '{
+```bash
+curl -X POST http://127.0.0.1:5000/get-posts \
+  -H "Content-Type: application/json" \
+  -d '{
     "account_suffix": "example",
     "wp_url": "https://example.com",
     "wp_username": "admin",
     "wp_password": "password"
   }'
-  ```
+```
 
-### 4. Fetch and Upload Image
+### Upload Images
+Fetch and upload images to WordPress based on keywords.
 
-- **URL**: `/fetch-and-upload-image`
-- **Method**: `POST`
-- **Description**: Fetches an image based on a keyword and uploads it to a WordPress site.
-- **Sample `curl` Request**:
-  ```bash
-  curl -X POST http://127.0.0.1:5000/fetch-and-upload-image -H "Content-Type: application/json" -d '{
+```bash
+curl -X POST http://127.0.0.1:5000/fetch-and-upload-image \
+  -H "Content-Type: application/json" \
+  -d '{
     "keyword": "nature",
     "account_suffix": "example",
     "wp_url": "https://example.com",
     "wp_username": "admin",
     "wp_password": "password"
   }'
-  ```
+```
 
-### 5. Update Post
+### Update Posts
+Update post media and SEO details.
 
-- **URL**: `/update-post`
-- **Method**: `POST`
-- **Description**: Updates the media and SEO details of a WordPress post.
-- **Sample `curl` Request**:
-  ```bash
-  curl -X POST http://127.0.0.1:5000/update-post -H "Content-Type: application/json" -d '{
+```bash
+curl -X POST http://127.0.0.1:5000/update-post \
+  -H "Content-Type: application/json" \
+  -d '{
     "account_suffix": "example",
     "post_id": 123,
     "focuskw": "keyword",
     "seo_title": "SEO Title",
     "meta_desc": "Meta Description"
   }'
-  ```
+```
 
-### 6. Edit Video
+### Edit Videos
+Add text overlay to videos.
 
-- **URL**: `/edit-video`
-- **Method**: `GET`
-- **Description**: Edits a video by adding text moving from right to left over 5 seconds and returns the video file.
-- **Sample `curl` Request**:
-  ```bash
-  curl -X GET http://127.0.0.1:5000/edit-video --output hello_video.mp4
-  ```
-
-## Setup and Installation
-
-1. Clone the repository.
-2. Install the required packages using `pip install -r requirements.txt`.
-3. Set the environment variable `VIDEO_OUTPUT_PATH` if needed.
-4. Run the Flask application using `python app.py`.
-
-## Environment Variables
-
-- `VIDEO_OUTPUT_PATH`: Path to save the edited video file (default is `hello_video.mp4`).
+```bash
+curl -X GET http://127.0.0.1:5000/edit-video --output video.mp4
+```
 
 ## Dependencies
 
-- Flask
-- moviepy
-- requests
-- Other dependencies can be found in `requirements.txt`.
+- Flask: Web framework
+- moviepy: Video editing
+- requests: HTTP client
+
+For a complete list, see `requirements.txt`
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
+Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+MIT License
